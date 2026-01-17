@@ -1,0 +1,24 @@
+# AWS Configuration
+aws_region = "us-east-1"
+
+# Project Configuration
+project_name = "qdrant-ha"
+environment  = "dev"
+
+# Network Configuration
+vpc_cidr = "10.0.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b"]
+
+# Instance Configuration
+instance_type     = "t3.micro"  # Free Tier: t2.micro or t3.micro
+min_instances     = 2
+desired_instances = 2
+max_instances     = 4
+volume_size       = 20  # Free Tier: up to 30GB total
+
+# SSH Access (optional)
+# key_pair_name = "my-key-pair"
+
+# Qdrant Configuration
+qdrant_version    = "1.7.4"
+enable_cluster_mode = false
