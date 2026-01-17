@@ -13,18 +13,29 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.6.0
       
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
+        continue-on-error: false
+      
+      - name: Configure AWS Credentials (for validation)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID || 'AKIAIOSFODNN7EXAMPLE' }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY || 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY' }}
+          aws-region: us-east-1
+        continue-on-error: true
       
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend=false -input=false
+        continue-on-error: false
       
       - name: Terraform Validate
-        run: terraform validate
+        run: terraform validate -no-color -json
+        continue-on-error: false
