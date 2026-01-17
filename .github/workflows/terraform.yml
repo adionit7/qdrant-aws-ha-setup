@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
     
     steps:
       - name: Checkout code
@@ -25,16 +24,25 @@ jobs:
       
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
+        continue-on-error: false
       
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID || 'AKIAIOSFODNN7EXAMPLE' }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY || 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY' }}
-          aws-region: us-east-1
+      - name: Setup AWS credentials for provider validation
+        run: |
+          mkdir -p ~/.aws
+          cat > ~/.aws/credentials <<EOF
+          [default]
+          aws_access_key_id = AKIAIOSFODNN7EXAMPLE
+          aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+          EOF
+          export AWS_DEFAULT_REGION=us-east-1
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
       
       - name: Terraform Init
         run: terraform init -backend=false -input=false
+        continue-on-error: false
       
       - name: Terraform Validate
         run: terraform validate -no-color
+        continue-on-error: false
+        env:
+          AWS_DEFAULT_REGION: us-east-1
