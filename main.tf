@@ -299,10 +299,10 @@ resource "aws_launch_template" "qdrant" {
 
 # Auto Scaling Group
 resource "aws_autoscaling_group" "qdrant" {
-  name                = "${var.project_name}-asg"
-  vpc_zone_identifier  = aws_subnet.qdrant_private[*].id
-  target_group_arns   = [aws_lb_target_group.qdrant_api.arn]
-  health_check_type   = "ELB"
+  name                      = "${var.project_name}-asg"
+  vpc_zone_identifier       = aws_subnet.qdrant_private[*].id
+  target_group_arns         = [aws_lb_target_group.qdrant_api.arn]
+  health_check_type         = "ELB"
   health_check_grace_period = 300
 
   min_size         = var.min_instances
