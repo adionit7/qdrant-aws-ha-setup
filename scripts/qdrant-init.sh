@@ -4,7 +4,7 @@ set -e
 # Qdrant High Availability Setup Script
 # This script installs and configures Qdrant on Amazon Linux 2023
 
-QDRAINT_VERSION="${qdrant_version}"
+QDRANT_VERSION="${qdrant_version}"
 CLUSTER_MODE="${cluster_mode}"
 
 # Update system
@@ -24,7 +24,8 @@ sudo systemctl enable docker
 sudo usermod -aG docker ec2-user
 
 # Install Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+COMPOSE_URL="https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64"
+sudo curl -L "$COMPOSE_URL" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
 # Create Qdrant data directory
@@ -45,7 +46,7 @@ storage:
   snapshots_path: /qdrant/snapshots
 
 cluster:
-  enabled: ${CLUSTER_MODE}
+  enabled: $CLUSTER_MODE
   p2p:
     port: 6335
 
@@ -60,7 +61,7 @@ version: '3.8'
 
 services:
   qdrant:
-    image: qdrant/qdrant:v${QDRAINT_VERSION}
+    image: qdrant/qdrant:v$QDRANT_VERSION
     container_name: qdrant
     ports:
       - "6333:6333"
@@ -132,4 +133,4 @@ sudo systemctl daemon-reload
 sudo systemctl enable qdrant.service
 
 # Log installation completion
-echo "$(date): Qdrant v${QDRAINT_VERSION} installed and started" >> /var/log/qdrant-install.log
+echo "Qdrant v$QDRANT_VERSION installed and started at $(date)" >> /var/log/qdrant-install.log
